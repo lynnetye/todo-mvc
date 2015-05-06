@@ -145,7 +145,7 @@ function updateDisplayOfFeatures() {
 
   if (currentLengthOfTodoList() > 0) {
     $filtersTab.removeClass('hide');
-    $completeAllIcon.attr('id', '');
+    $completeAllIcon.removeClass('hide');
     if (currentNumberOfActiveTasks() === 1 ) {
       $itemCounter.text(currentNumberOfActiveTasks() + ' item left');
     } else {
@@ -153,7 +153,7 @@ function updateDisplayOfFeatures() {
     }
   } else {
     $filtersTab.addClass('hide');
-    $completeAllIcon.attr('id', 'hide');
+    $completeAllIcon.addClass('hide');
   }
 
   if (currentNumberOfCompletedTasks() > 0) {

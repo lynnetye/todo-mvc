@@ -119,7 +119,7 @@ section.todo-list {
   text-decoration: line-through;
 }
 
-.hide,
-#hide {
+.fa.hide,
+.hide {
   display: none;
 }
