@@ -24,8 +24,11 @@ $(document).ready(function(){
 
       if ($faIcon.hasClass('complete-icon')) {
         completeTask($faIcon, status, $task);
+        adjustSettings();
+
       } else if ($faIcon.hasClass('delete-icon')) {
         deleteTask($task);
+
       } else if ($faIcon.hasClass('clear-all-icon')){
         clearAllTasks(clearAllCounter);
         clearAllCounter += 1;
@@ -48,12 +51,12 @@ function completeTask($faIcon, status, $task) {
       .addClass('fa-circle-o');
     $task.attr('completed', 'false');
   }
+  adjustSettings();
 };
 
 function deleteTask($task) {
   $task.remove();
-  adjustSettings(currentLengthOfTodoList());
-  console.log(currentLengthOfTodoList());
+  adjustSettings();
 };
 
 function clearAllTasks(clearAllCounter) {
@@ -113,7 +116,7 @@ function addNewTodoToList(newTodoText) {
     .attr('completed', 'false');
   $todoCloneFaIcon.addClass('fa-circle-o');
   $todoList.append($todoClone);
-  adjustSettings(currentLengthOfTodoList());
+  adjustSettings();
 };
 
 function currentLengthOfTodoList(){
@@ -121,18 +124,27 @@ function currentLengthOfTodoList(){
   return numberOfTasks;
 };
 
-function adjustSettings(numberOfTasks){
+function currentNumberOfActiveTasks(){
+  var $allTasks = $('.todo-list').children().not('.todo-template, .todo-form'),
+    numberOfActiveTasks = $allTasks.filter("[completed='false']").length;
+  return numberOfActiveTasks;
+};
+
+function adjustSettings(){
   var $filtersTab = $('.filters-tab'),
       $itemCounter = $('.item-counter'),
-      $completeAllIcon = $('.todo-form > i');
+      $completeAllIcon = $('.todo-form > i'),
+      numberOfTasks = currentLengthOfTodoList(),
+      numberOfActiveTasks = currentNumberOfActiveTasks();
 
+      console.log(numberOfActiveTasks);
   if (numberOfTasks > 0) {
     $filtersTab.removeClass('hide');
     $completeAllIcon.attr('id', '');
-    if (numberOfTasks === 1 ) {
-      $itemCounter.text(numberOfTasks + ' item left');
+    if (numberOfActiveTasks === 1 ) {
+      $itemCounter.text(numberOfActiveTasks + ' item left');
     } else {
-      $itemCounter.text(numberOfTasks + ' items left');
+      $itemCounter.text(numberOfActiveTasks + ' items left');
     }
   } else {
     $filtersTab.addClass('hide');
