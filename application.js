@@ -1,29 +1,28 @@
 $(document).ready(function(){
   var $newTodoInput = $('.new-todo-input');
 
-  $newTodoInput.on('click', function(){
-    $(this).on('keydown', function(event) {
-      if (event.keyCode !== 13) {
-        return;
-      }
-      else {
-        var enteredInput = $(this).val();
+  $newTodoInput.on('keydown', function(event){
+    if (event.keyCode !== 13) {
+      return;
+    }
+    else {
+      var enteredInput = $(this).val();
 
-        console.log(enteredInput);
-        addNewTodoToList(enteredInput);
-      }
-    });
+      addNewTodoToList(enteredInput);
+      $(this).val('');
+    }
   });
 });
 
-var addNewTodoToList = function(newTodoText) {
+function addNewTodoToList(newTodoText) {
   var $todoList = $('section.todo-list');
-      $todoClone = $('.new-todo-template').first().clone(),
-      $todoCloneInput = $todoClone.find('input');
+      $todoClone = $('.todo-template').first().clone(),
+      $todoCloneInput = $todoClone.find('input'),
+      $todoCloneFaIcon = $todoClone.find('i').first();
 
-  console.log('here');
-  $todoClone.removeClass('new-todo-template');
   $todoCloneInput.val(newTodoText);
-  $todoClone.removeClass('hide');
+  $todoClone.removeClass('new-todo-template')
+    .removeClass('hide');
+  $todoCloneFaIcon.addClass('fa-circle-o');
   $todoList.append($todoClone);
 };

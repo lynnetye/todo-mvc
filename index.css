@@ -25,7 +25,7 @@ input.new-todo-input[type=text] {
   font-family: 'Open Sans';
   font-size: 20px;
   letter-spacing: 2px;
-  padding-left: 50px;
+  padding-left: 60px;
 }
 
 ::-webkit-input-placeholder{
@@ -34,8 +34,12 @@ input.new-todo-input[type=text] {
   font-weight: 300;
 }
 
-.fa-caret-down {
+.fa {
   padding: 10px 15px;
+  position: absolute;
+}
+
+.fa-times {
   position: absolute;
 }
 
@@ -49,6 +53,57 @@ input.new-todo-input[type=text] {
 
 input:focus {
   outline: none;
+}
+
+section.todo-list {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.todo-task {
+  position: relative;
+  width: 464px;
+  margin: 0 auto;
+}
+
+.delete-icon {
+  color: #FFC0C4;
+  opacity: 0;
+  right: 0px;
+  top: 0px;
+}
+
+.filters-tab {
+  border: 1.5px solid #BABFBB;
+  background-color: white;
+  display: flex;
+  margin: 0 auto;
+  width: 462px;
+}
+
+.filters-tab p {
+  border: 1px solid gray;
+  border-radius: 5px;
+  font-size: 14px;
+  margin: 10px;
+  padding: 5px;
+}
+
+.filters {
+  display: flex;
+  margin: 0 auto;
+}
+
+.filters-tab > p {
+  position: absolute;
+}
+
+.new-todo-input:hover + .delete-icon {
+  opacity: .5;
+}
+
+.delete-icon:hover {
+  opacity: 1;
 }
 
 .hide,
