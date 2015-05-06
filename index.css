@@ -82,7 +82,6 @@ section.todo-list {
 }
 
 .filters-tab p {
-  border: 1px solid gray;
   border-radius: 5px;
   font-size: 14px;
   margin: 10px;
@@ -104,6 +103,10 @@ section.todo-list {
 
 .delete-icon:hover {
   opacity: 1;
+}
+
+.selected {
+  border: 1px solid gray;
 }
 
 .hide,

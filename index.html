@@ -13,20 +13,20 @@
   <h1>todos</h1>
   <section class="todo-list">
     <div class="todo-form">
-      <i id="hide" class="fa fa-caret-down fa-2x unselected-gray"></i>
+      <i id="hide" class="fa fa-caret-down fa-2x clear-all-icon unselected-gray"></i>
       <input class="new-todo-input" type="text" placeholder="What needs to be done?"></input>
     </div>
     <div class="todo-template todo-task hide">
-      <i class="fa fa-2x unselected-gray"></i>
+      <i class="fa fa-2x unselected-gray complete-icon"></i>
       <input class="new-todo-input" type="text" readonly="readonly">
       <i class="fa fa-times fa-2x delete-icon"></i>
       </input>
     </div>
   </section>
-  <div class="filters-tab">
-      <p class="counter">item left</p>
+  <div class="filters-tab hide">
+      <p class="item-counter">item left</p>
       <div class="filters">
-        <p>All</p>
+        <p class="selected">All</p>
         <p>Active</p>
         <p>Completed</p>
       </div>
