@@ -1,6 +1,5 @@
 $(document).ready(function(){
   var $newTodoInput = $('.new-todo-input'),
-      $body = $('body'),
       clearAllCounter = 0;
 
   $newTodoInput.on('keydown', function(event){
@@ -15,12 +14,11 @@ $(document).ready(function(){
     }
   });
 
-  $body.on('click', function() {
+  $('body').on('click', function() {
     if (event.target.nodeName === 'I') {
       var $faIcon = $(event.target),
           $task = $faIcon.closest('div'),
-          status = $task.attr('completed'),
-          taskID = $task.id;
+          status = $task.attr('completed');
 
       if ($faIcon.hasClass('complete-icon')) {
         completeTask($faIcon, status, $task);
@@ -33,6 +31,7 @@ $(document).ready(function(){
         clearAllTasks(clearAllCounter);
         clearAllCounter += 1;
       }
+
     } else if (event.target.nodeName === 'P') {
       var $filterTab = $(event.target);
 
@@ -46,7 +45,6 @@ $(document).ready(function(){
 
 function completeTask($faIcon, status, $task) {
   if (status === 'false') {
-
     $faIcon.removeClass('fa-circle-o')
       .addClass('fa-check-circle-o');
     $task.attr('completed', 'true')
@@ -66,18 +64,16 @@ function deleteTask($task) {
 };
 
 function clearCompletedTasks(){
-  var $allCompletedTasks = $allTasks = $('.todo-list').children().not('.todo-template, .todo-form').filter("[completed='true']");
+  var $allCompletedTasks = $allTasks().filter("[completed='true']");
 
   for (var i = 0; i < $allCompletedTasks.length; i++) {
-    $($allCompletedTasks[i]).remove();
+    deleteTask($($allCompletedTasks[i]));
   }
 };
 
 function clearAllTasks(clearAllCounter) {
-  var $allTasks = $('section').children().not('.todo-form, .todo-template');
-
-  for (var i = 0; i < $allTasks.length; i++) {
-    var $task = $($allTasks[i]),
+  for (var i = 0; i < $allTasks().length; i++) {
+    var $task = $($allTasks()[i]),
         $faIcon = $task.find('i').first();
 
     if (clearAllCounter % 2 === 0) {
@@ -89,10 +85,8 @@ function clearAllTasks(clearAllCounter) {
 };
 
 function applyCorrectFilter($filterTab) {
-  var $allTasks = $('section.todo-list').children().not('.todo-form, .todo-template');
-
-  for (var i = 0; i < $allTasks.length; i++) {
-    var $task = $($allTasks[i]);
+  for (var i = 0; i < $allTasks().length; i++) {
+    var $task = $($allTasks()[i]);
 
     if ($filterTab.hasClass('filter-all')) {
       $task.removeClass('hide');
@@ -118,8 +112,7 @@ function applyCorrectFilter($filterTab) {
 };
 
 function addNewTodoToList(newTodoText) {
-  var $todoList = $('section.todo-list');
-      $todoClone = $('.todo-template').first().clone(),
+  var $todoClone = $('.todo-template').first().clone(),
       $todoCloneInput = $todoClone.find('input'),
       $todoCloneFaIcon = $todoClone.find('i').first();
 
@@ -129,37 +122,17 @@ function addNewTodoToList(newTodoText) {
     .attr('id', currentLengthOfTodoList() + 1)
     .attr('completed', 'false');
   $todoCloneFaIcon.addClass('fa-circle-o');
-  $todoList.append($todoClone);
+  $('.todo-list').append($todoClone);
   adjustSettings();
-};
-
-function currentLengthOfTodoList(){
-  var numberOfTasks = $('.todo-list').children().length - 2;
-  return numberOfTasks;
-};
-
-function currentNumberOfActiveTasks(){
-  var $allTasks = $('.todo-list').children().not('.todo-template, .todo-form'),
-    numberOfActiveTasks = $allTasks.filter("[completed='false']").length;
-  return numberOfActiveTasks;
-};
-
-function currentNumberOfCompletedTasks(){
-  var $allTasks = $('.todo-list').children().not('.todo-template, .todo-form'),
-      numberOfCompletedTasks = $allTasks.filter("[completed='true']").length;
-
-  return numberOfCompletedTasks;
 };
 
 function adjustSettings(){
   var $filtersTab = $('.filters-tab'),
       $itemCounter = $('.item-counter'),
       $completeAllIcon = $('.todo-form > i'),
-      numberOfTasks = currentLengthOfTodoList(),
-      numberOfActiveTasks = currentNumberOfActiveTasks(),
-      numberOfCompletedTasks = currentNumberOfCompletedTasks();
+      numberOfActiveTasks = currentNumberOfActiveTasks();
 
-  if (numberOfTasks > 0) {
+  if (currentLengthOfTodoList() > 0) {
     $filtersTab.removeClass('hide');
     $completeAllIcon.attr('id', '');
     if (numberOfActiveTasks === 1 ) {
@@ -172,7 +145,7 @@ function adjustSettings(){
     $completeAllIcon.attr('id', 'hide');
   }
 
-  if (numberOfCompletedTasks > 0) {
+  if (currentNumberOfCompletedTasks() > 0) {
     $('p.clear-completed').removeClass('hide');
   } else {
     $('p.clear-completed').addClass('hide');
@@ -182,4 +155,26 @@ function adjustSettings(){
 function adjustFilterSettings($filterTab){
   $filterTab.addClass('selected');
   $filterTab.siblings().removeClass('selected');
+};
+
+
+
+// "HELPER" FUNCTIONS
+function $allTasks() {
+  return $('.todo-list').children().not('.todo-template, .todo-form');
+};
+
+function currentLengthOfTodoList(){
+  var numberOfTasks = $allTasks().length;
+  return numberOfTasks;
+};
+
+function currentNumberOfActiveTasks(){
+  var numberOfActiveTasks = $allTasks().filter("[completed='false']").length;
+  return numberOfActiveTasks;
+};
+
+function currentNumberOfCompletedTasks(){
+  var numberOfCompletedTasks = $allTasks().filter("[completed='true']").length;
+  return numberOfCompletedTasks;
 };
