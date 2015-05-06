@@ -36,6 +36,9 @@ $(document).ready(function(){
     } else if (event.target.nodeName === 'P') {
       var $filterTab = $(event.target);
 
+      if ($filterTab.hasClass('clear-completed')) {
+        clearCompletedTasks();
+      }
       applyCorrectFilter($filterTab);
     }
   });
@@ -43,13 +46,16 @@ $(document).ready(function(){
 
 function completeTask($faIcon, status, $task) {
   if (status === 'false') {
+
     $faIcon.removeClass('fa-circle-o')
       .addClass('fa-check-circle-o');
-    $task.attr('completed', 'true');
+    $task.attr('completed', 'true')
+      .find('input').addClass('line-through');
   } else if (status === 'true') {
     $faIcon.removeClass('fa-check-circle-o')
       .addClass('fa-circle-o');
-    $task.attr('completed', 'false');
+    $task.attr('completed', 'false')
+      $task.find('input').removeClass('line-through');
   }
   adjustSettings();
 };
@@ -57,6 +63,14 @@ function completeTask($faIcon, status, $task) {
 function deleteTask($task) {
   $task.remove();
   adjustSettings();
+};
+
+function clearCompletedTasks(){
+  var $allCompletedTasks = $allTasks = $('.todo-list').children().not('.todo-template, .todo-form').filter("[completed='true']");
+
+  for (var i = 0; i < $allCompletedTasks.length; i++) {
+    $($allCompletedTasks[i]).remove();
+  }
 };
 
 function clearAllTasks(clearAllCounter) {
@@ -130,14 +144,21 @@ function currentNumberOfActiveTasks(){
   return numberOfActiveTasks;
 };
 
+function currentNumberOfCompletedTasks(){
+  var $allTasks = $('.todo-list').children().not('.todo-template, .todo-form'),
+      numberOfCompletedTasks = $allTasks.filter("[completed='true']").length;
+
+  return numberOfCompletedTasks;
+};
+
 function adjustSettings(){
   var $filtersTab = $('.filters-tab'),
       $itemCounter = $('.item-counter'),
       $completeAllIcon = $('.todo-form > i'),
       numberOfTasks = currentLengthOfTodoList(),
-      numberOfActiveTasks = currentNumberOfActiveTasks();
+      numberOfActiveTasks = currentNumberOfActiveTasks(),
+      numberOfCompletedTasks = currentNumberOfCompletedTasks();
 
-      console.log(numberOfActiveTasks);
   if (numberOfTasks > 0) {
     $filtersTab.removeClass('hide');
     $completeAllIcon.attr('id', '');
@@ -149,6 +170,12 @@ function adjustSettings(){
   } else {
     $filtersTab.addClass('hide');
     $completeAllIcon.attr('id', 'hide');
+  }
+
+  if (numberOfCompletedTasks > 0) {
+    $('p.clear-completed').removeClass('hide');
+  } else {
+    $('p.clear-completed').addClass('hide');
   }
 };
 

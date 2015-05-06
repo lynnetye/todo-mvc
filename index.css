@@ -17,7 +17,7 @@ div.new-todo-input {
 
 input.new-todo-input {
   padding: 10px 0px;
-  width: 400px;
+  width: 450px;
 }
 
 input.new-todo-input[type=text] {
@@ -62,7 +62,7 @@ section.todo-list {
 
 .todo-task {
   position: relative;
-  width: 464px;
+  width: 515px;
   margin: 0 auto;
 }
 
@@ -78,7 +78,8 @@ section.todo-list {
   background-color: white;
   display: flex;
   margin: 0 auto;
-  width: 462px;
+  position: relative;
+  width: 512px;
 }
 
 .filters-tab p {
@@ -107,6 +108,15 @@ section.todo-list {
 
 .selected {
   border: 1px solid gray;
+}
+
+.clear-completed {
+  position: relative;
+  right: 0px;
+}
+
+.line-through {
+  text-decoration: line-through;
 }
 
 .hide,
