@@ -33,9 +33,6 @@ $(document).ready(function(){
     } else if (event.target.nodeName === 'P') {
       var $filterTab = $(event.target);
 
-      $filterTab.addClass('selected');
-      $filterTab.siblings().removeClass('selected');
-
       applyCorrectFilter($filterTab);
     }
   });
@@ -54,7 +51,9 @@ function completeTask($faIcon, status, $task) {
 };
 
 function deleteTask($task) {
-  $task.fadeOut();
+  $task.remove();
+  adjustSettings(currentLengthOfTodoList());
+  console.log(currentLengthOfTodoList());
 };
 
 function clearAllTasks(clearAllCounter) {
@@ -80,8 +79,10 @@ function applyCorrectFilter($filterTab) {
 
     if ($filterTab.hasClass('filter-all')) {
       $task.removeClass('hide');
+      adjustFilterSettings($filterTab);
 
     } else if ($filterTab.hasClass('filter-active')) {
+      adjustFilterSettings($filterTab);
       if ($task.attr('completed') === 'true') {
         $task.addClass('hide');
       } else {
@@ -89,6 +90,7 @@ function applyCorrectFilter($filterTab) {
       }
 
     } else if ($filterTab.hasClass('filter-completed')) {
+      adjustFilterSettings($filterTab);
       if ($task.attr('completed') === 'false') {
         $task.addClass('hide');
       } else {
@@ -136,4 +138,9 @@ function adjustSettings(numberOfTasks){
     $filtersTab.addClass('hide');
     $completeAllIcon.attr('id', 'hide');
   }
+};
+
+function adjustFilterSettings($filterTab){
+  $filterTab.addClass('selected');
+  $filterTab.siblings().removeClass('selected');
 };
