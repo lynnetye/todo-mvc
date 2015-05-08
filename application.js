@@ -68,7 +68,7 @@ $(document).ready(function() {
         status = $task.attr('completed');
 
     if ($faIcon.hasClass('complete-icon')) {
-      completeTask($faIcon, status, $task);
+      updateTaskStatus($faIcon, status, $task);
 
     } else if ($faIcon.hasClass('delete-icon')) {
       deleteTask($task);
@@ -141,26 +141,39 @@ function showCompletedTasks() {
   };
 };
 
-function completeTask($faIcon, status, $task) {
+function updateTaskStatus($faIcon, status, $task) {
+  if (status === 'false') {
+    completeTask($faIcon, $task);
+  } else if (status === 'true') {
+    reactivateTask($faIcon, $task);
+  }
+};
+
+function completeTask($faIcon, $task) {
   var taskDescription = $task.find('input').val();
 
-  if (status === 'false') {
-    $faIcon
-      .removeClass('fa-circle-o')
-      .addClass('fa-check-circle-o');
-    $task
-      .attr('completed', 'true')
-      .find('input').addClass('line-through');
-    localStorage.setItem(taskDescription, true);
-  } else if (status === 'true') {
-    $faIcon
-      .removeClass('fa-check-circle-o')
-      .addClass('fa-circle-o');
-    $task
-      .attr('completed', 'false')
-      $task.find('input').removeClass('line-through');
-    localStorage.setItem(taskDescription, false);
-  }
+  $faIcon
+    .removeClass('fa-circle-o')
+    .addClass('fa-check-circle-o');
+  $task
+    .attr('completed', 'true')
+    .find('input').addClass('line-through');
+
+  localStorage.setItem(taskDescription, true);
+  updateDisplayOfFeatures();
+};
+
+function reactivateTask($faIcon, $task) {
+  var taskDescription = $task.find('input').val();
+
+  $faIcon
+    .removeClass('fa-check-circle-o')
+    .addClass('fa-circle-o');
+  $task
+    .attr('completed', 'false')
+    $task.find('input').removeClass('line-through');
+
+  localStorage.setItem(taskDescription, false);
   updateDisplayOfFeatures();
 };
 
@@ -184,9 +197,9 @@ function clearAllTasks(clearAllCounter) {
         $faIcon = $task.find('i').first();
 
     if (clearAllCounter % 2 === 0) {
-      completeTask($faIcon, 'false', $task);
+      completeTask($faIcon, $task);
     } else {
-      completeTask($faIcon, 'true', $task);
+      reactivateTask($faIcon, $task);
     }
   }
 };
