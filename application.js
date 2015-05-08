@@ -1,3 +1,55 @@
+// CONTROLLER
+if (localStorage.length === 0) {
+  localStorage.setItem('localStorageKeys', []);
+  var localStorageKeys = [];
+} else {
+  var localStorageKeys = localStorage.getItem('localStorageKeys').split(',');
+
+  for (var i = 0; i < localStorageKeys.length; i++) {
+    var taskDescription = localStorageKeys[i],
+        taskStatus = localStorage.getItem(taskDescription);
+
+    constructTaskDOMElement(taskDescription, taskStatus);
+  }
+  if (location.hash === '#all' || '') {
+    showAllTasks('filter-all');
+  } else if (location.hash === '#active') {
+    showActiveTasks('filter-active');
+  } else if (location.hash ==='#completed') {
+    showCompletedTasks('filter-completed');
+  }
+}
+
+// recreate DOM element via local storage
+function constructTaskDOMElement(todoDescription, todoStatus) {
+  var $todoClone = $('.todo-template').first().clone(),
+      $todoCloneInput = $todoClone.find('input'),
+      $todoCloneFaIcon = $todoClone.find('i').first();
+
+  $todoCloneInput.val(todoDescription);
+  $todoClone
+    .removeClass('todo-template');
+
+  if (todoStatus === 'false') {
+    $todoCloneFaIcon.addClass('fa-circle-o');
+    $todoClone.attr('completed', 'false');
+  } else {
+    $todoCloneFaIcon.addClass('fa-check-circle-o');
+    $todoClone.attr('completed', 'true');
+  }
+  $('.todo-list').append($todoClone);
+  updateDisplayOfFeatures();
+};
+
+function updateLocalStorageKeys(){
+  if (localStorageKeys.indexOf("") > -1) {
+    var index = localStorageKeys.indexOf("") > -1;
+    localStorageKeys.splice(emptyIndex, 1);
+  }
+
+  localStorage.setItem('localStorageKeys', localStorageKeys);
+};
+
 $(document).ready(function() {
   var $newTodoInput = $('.new-todo-input'),
       clearAllCounter = 0;
@@ -36,11 +88,11 @@ $(document).ready(function() {
     if ($filterTab.hasClass('clear-completed')) {
       clearCompletedTasks();
     } else if ($filterTab.hasClass('filter-all')) {
-      showAllTasks($filterTab);
+      showAllTasks('filter-all');
     } else if ($filterTab.hasClass('filter-active')) {
-      showActiveTasks($filterTab);
+      showActiveTasks('filter-active');
     } else if ($filterTab.hasClass('filter-completed')) {
-      showCompletedTasks($filterTab);
+      showCompletedTasks('filter-completed');
     }
   });
 });
@@ -53,15 +105,20 @@ function clearCompletedTasks() {
   }
 };
 
-function showAllTasks($filterTab) {
+function showAllTasks(selectedFilter) {
   for (var i = 0; i < $allTasks().length; i++) {
     $($allTasks()[i]).removeClass('hide');
-    showSelectedFilterTab($filterTab);
+    showSelectedFilterTab(selectedFilter);
+
+    // update URL
+    history.pushState(null, null, '#all');
   }
 };
 
-function showActiveTasks($filterTab) {
-  showSelectedFilterTab($filterTab);
+function showActiveTasks(selectedFilter) {
+  showSelectedFilterTab(selectedFilter);
+  history.pushState(null, null, '#active');
+
   for (var i = 0; i < $allTasks().length; i++) {
     var $task = $($allTasks()[i]);
 
@@ -73,8 +130,10 @@ function showActiveTasks($filterTab) {
   }
 };
 
-function showCompletedTasks($filterTab) {
-  showSelectedFilterTab($filterTab);
+function showCompletedTasks(selectedFilter) {
+  showSelectedFilterTab(selectedFilter);
+  history.pushState(null, null, '#completed');
+
   for (var i = 0; i < $allTasks().length; i++) {
     var $task = $($allTasks()[i]);
 
@@ -94,6 +153,7 @@ function completeTask($faIcon, status, $task) {
     $task
       .attr('completed', 'true')
       .find('input').addClass('line-through');
+    localStorage.setItem($task.find('input').val(), true);
   } else if (status === 'true') {
     $faIcon
       .removeClass('fa-check-circle-o')
@@ -101,13 +161,23 @@ function completeTask($faIcon, status, $task) {
     $task
       .attr('completed', 'false')
       $task.find('input').removeClass('line-through');
+    localStorage.setItem($task.find('input').val(), false);
   }
   updateDisplayOfFeatures();
 };
 
 function deleteTask($task) {
+  // remove from local storage
+  var todoText = $task.find('input').val(),
+      index = localStorageKeys.indexOf(todoText);
+
+  localStorageKeys.splice(index, 1);
+  localStorage.removeItem(todoText);
+  updateLocalStorageKeys();
+
   $task.remove();
   updateDisplayOfFeatures();
+  updateLocalStorageKeys();
 };
 
 function clearAllTasks(clearAllCounter) {
@@ -128,6 +198,10 @@ function addNewTodoToList(newTodoText) {
       $todoCloneInput = $todoClone.find('input'),
       $todoCloneFaIcon = $todoClone.find('i').first();
 
+  // add to localstorage
+  localStorage.setItem(newTodoText, false);
+  localStorageKeys.push(newTodoText);
+
   $todoCloneInput.val(newTodoText);
   $todoClone
     .removeClass('todo-template')
@@ -136,6 +210,7 @@ function addNewTodoToList(newTodoText) {
   $todoCloneFaIcon.addClass('fa-circle-o');
   $('.todo-list').append($todoClone);
   updateDisplayOfFeatures();
+  updateLocalStorageKeys();
 };
 
 function updateDisplayOfFeatures() {
@@ -163,8 +238,8 @@ function updateDisplayOfFeatures() {
   }
 };
 
-function showSelectedFilterTab($filterTab) {
-  $filterTab
+function showSelectedFilterTab(selectedFilter) {
+  $('.filters-tab').find('p.filter-action.' + selectedFilter)
     .addClass('selected')
     .siblings().removeClass('selected');
 };
@@ -187,3 +262,6 @@ function currentNumberOfActiveTasks() {
 function currentNumberOfCompletedTasks() {
   return $allTasks().filter("[completed='true']").length;
 };
+
+
+
