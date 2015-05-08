@@ -1,4 +1,4 @@
-// CONTROLLER
+// reset page if page is reloaded/refreshed
 if (localStorage.length === 0) {
   localStorage.setItem('localStorageKeys', []);
   var localStorageKeys = [];
@@ -9,14 +9,17 @@ if (localStorage.length === 0) {
     var taskDescription = localStorageKeys[i],
         taskStatus = localStorage.getItem(taskDescription);
 
-    constructTaskDOMElement(taskDescription, taskStatus);
+    if (taskDescription !== '') {
+      constructTaskDOMElement(taskDescription, taskStatus);
+    }
   }
+
   if (location.hash === '#all' || '') {
-    showAllTasks('filter-all');
+    showAllTasks();
   } else if (location.hash === '#active') {
-    showActiveTasks('filter-active');
+    showActiveTasks();
   } else if (location.hash ==='#completed') {
-    showCompletedTasks('filter-completed');
+    showCompletedTasks();
   }
 }
 
@@ -32,22 +35,17 @@ function constructTaskDOMElement(todoDescription, todoStatus) {
 
   if (todoStatus === 'false') {
     $todoCloneFaIcon.addClass('fa-circle-o');
-    $todoClone.attr('completed', 'false');
+    $todoClone
+      .attr('completed', 'false')
+      .find('input').removeClass('line-through');
   } else {
     $todoCloneFaIcon.addClass('fa-check-circle-o');
-    $todoClone.attr('completed', 'true');
+    $todoClone
+      .attr('completed', 'true')
+      .find('input').addClass('line-through');
   }
   $('.todo-list').append($todoClone);
   updateDisplayOfFeatures();
-};
-
-function updateLocalStorageKeys(){
-  if (localStorageKeys.indexOf("") > -1) {
-    var index = localStorageKeys.indexOf("") > -1;
-    localStorageKeys.splice(emptyIndex, 1);
-  }
-
-  localStorage.setItem('localStorageKeys', localStorageKeys);
 };
 
 $(document).ready(function() {
@@ -71,7 +69,6 @@ $(document).ready(function() {
 
     if ($faIcon.hasClass('complete-icon')) {
       completeTask($faIcon, status, $task);
-      updateDisplayOfFeatures();
 
     } else if ($faIcon.hasClass('delete-icon')) {
       deleteTask($task);
@@ -105,18 +102,17 @@ function clearCompletedTasks() {
   }
 };
 
-function showAllTasks(selectedFilter) {
+function showAllTasks() {
+  showSelectedFilterTab('filter-all');
+  history.pushState(null, null, '#all');
+
   for (var i = 0; i < $allTasks().length; i++) {
     $($allTasks()[i]).removeClass('hide');
-    showSelectedFilterTab(selectedFilter);
-
-    // update URL
-    history.pushState(null, null, '#all');
   }
 };
 
-function showActiveTasks(selectedFilter) {
-  showSelectedFilterTab(selectedFilter);
+function showActiveTasks() {
+  showSelectedFilterTab('filter-active');
   history.pushState(null, null, '#active');
 
   for (var i = 0; i < $allTasks().length; i++) {
@@ -130,8 +126,8 @@ function showActiveTasks(selectedFilter) {
   }
 };
 
-function showCompletedTasks(selectedFilter) {
-  showSelectedFilterTab(selectedFilter);
+function showCompletedTasks() {
+  showSelectedFilterTab('filter-completed');
   history.pushState(null, null, '#completed');
 
   for (var i = 0; i < $allTasks().length; i++) {
@@ -146,6 +142,8 @@ function showCompletedTasks(selectedFilter) {
 };
 
 function completeTask($faIcon, status, $task) {
+  var taskDescription = $task.find('input').val();
+
   if (status === 'false') {
     $faIcon
       .removeClass('fa-circle-o')
@@ -153,7 +151,7 @@ function completeTask($faIcon, status, $task) {
     $task
       .attr('completed', 'true')
       .find('input').addClass('line-through');
-    localStorage.setItem($task.find('input').val(), true);
+    localStorage.setItem(taskDescription, true);
   } else if (status === 'true') {
     $faIcon
       .removeClass('fa-check-circle-o')
@@ -161,7 +159,7 @@ function completeTask($faIcon, status, $task) {
     $task
       .attr('completed', 'false')
       $task.find('input').removeClass('line-through');
-    localStorage.setItem($task.find('input').val(), false);
+    localStorage.setItem(taskDescription, false);
   }
   updateDisplayOfFeatures();
 };
@@ -263,5 +261,6 @@ function currentNumberOfCompletedTasks() {
   return $allTasks().filter("[completed='true']").length;
 };
 
-
-
+function updateLocalStorageKeys(){
+  localStorage.setItem('localStorageKeys', localStorageKeys);
+};
